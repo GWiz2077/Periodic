@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Element Card</title>
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --panel:rgba(15,22,32,.78);
+      --panel2:rgba(12,18,26,.58);
+      --text:#e7eef7;
+      --muted:#9fb0c3;
+      --border:rgba(255,255,255,.08);
+      --shadow:0 18px 60px rgba(0,0,0,.45);
+      --radius:18px;
+
+      --accent:#7aa2ff;
+      --good:#a3ff6f;
+      --warn:#ffcc66;
+      --bad:#ff5c7a;
+    }
+
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background:
+        radial-gradient(1200px 600px at 20% -10%, rgba(122,162,255,.18), transparent 60%),
+        radial-gradient(900px 550px at 90% 10%, rgba(76,201,240,.15), transparent 55%),
+        radial-gradient(900px 600px at 50% 110%, rgba(163,255,111,.12), transparent 60%),
+        var(--bg);
+      color:var(--text);
+      min-height:100vh;
+      display:flex;
+      justify-content:center;
+      padding:22px;
+    }
+
+    .app{ width:min(920px, 100%); display:flex; flex-direction:column; gap:14px; }
+
+    header{
+      display:flex; gap:10px; align-items:center; justify-content:space-between;
+      padding:14px 16px;
+      background:rgba(15,22,32,.75);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .brand{ display:flex; flex-direction:column; gap:2px; }
+    .brand h1{
+      font-size:14px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      margin:0;
+      color:rgba(231,238,247,.92);
+    }
+    .brand .sub{ font-size:12px; color:var(--muted); margin:0; }
+
+    .pill{
+      display:flex; gap:8px; align-items:center;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(12,18,26,.45);
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+    }
+    .dot{ width:10px; height:10px; border-radius:999px; background:var(--accent); box-shadow:0 0 18px rgba(122,162,255,.35); }
+
+    .card{
+      border:1px solid var(--border);
+      border-radius: 16px;
+      background:var(--panel);
+      padding:14px;
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .searchRow{
+      display:flex; gap:10px; align-items:center; flex-wrap:wrap;
+    }
+
+    .search{
+      flex:1;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:12px 12px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:rgba(11,15,20,.70);
+    }
+
+    .search input{
+      width:100%;
+      border:0;
+      outline:none;
+      background:transparent;
+      color:var(--text);
+      font-size:16px;
+      font-weight:800;
+      letter-spacing:.02em;
+    }
+    .search input::placeholder{ color:rgba(159,176,195,.65); font-weight:700; }
+
+    .btn{
+      border:1px solid var(--border);
+      background:rgba(17,27,39,.65);
+      color:var(--text);
+      padding:10px 12px;
+      border-radius:14px;
+      cursor:pointer;
+      font-weight:900;
+      transition: transform .08s ease, background .2s ease, border-color .2s ease;
+      user-select:none;
+    }
+    .btn:active{ transform: translateY(1px) }
+    .btn.primary{ background:rgba(122,162,255,.22); border-color: rgba(122,162,255,.35); }
+    .btn.ghost{ background:rgba(12,18,26,.25); }
+    .btn.bad{ background:rgba(255,92,122,.14); border-color: rgba(255,92,122,.28); }
+
+    .hint{
+      margin:10px 0 0 0;
+      color:rgba(159,176,195,.88);
+      font-size:12px;
+      line-height:1.35;
+    }
+    code{ background:rgba(0,0,0,.22); padding:2px 6px; border-radius:8px; border:1px solid var(--border); }
+
+    .layout{
+      display:grid;
+      grid-template-columns: 1.25fr .75fr;
+      gap:12px;
+      margin-top:12px;
+      align-items:start;
+    }
+    @media(max-width: 820px){
+      .layout{ grid-template-columns: 1fr; }
+    }
+
+    .panel2{
+      border:1px solid var(--border);
+      border-radius: 18px;
+      background:var(--panel2);
+      padding:14px;
+    }
+
+    .badges{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin-bottom:12px; }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(11,15,20,.55);
+      color:var(--muted);
+      font-size:12px;
+      font-weight:800;
+    }
+
+    .hero{
+      display:flex;
+      gap:14px;
+      align-items:flex-start;
+    }
+
+    .symbolBox{
+      width:118px;
+      height:118px;
+      border-radius:18px;
+      border:1px solid var(--border);
+      background:rgba(11,15,20,.55);
+      display:grid;
+      place-items:center;
+      position:relative;
+      overflow:hidden;
+    }
+    .symbolBox::after{
+      content:"";
+      position:absolute;
+      inset:-55%;
+      background: radial-gradient(circle at 30% 30%, rgba(122,162,255,.22), transparent 55%);
+      transform: rotate(12deg);
+    }
+    .symbol{
+      position:relative;
+      z-index:1;
+      font-size:50px;
+      font-weight:1000;
+      letter-spacing:.02em;
+    }
+
+    .meta{ flex:1; display:flex; flex-direction:column; gap:6px; padding-top:6px; }
+    .name{ font-size:26px; font-weight:1000; margin:0; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top:10px;
+    }
+    @media(max-width: 520px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .kv{
+      padding:10px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:rgba(11,15,20,.48);
+      font-size:13px;
+    }
+    .k{ color:rgba(159,176,195,.85); font-weight:900; letter-spacing:.02em; font-size:12px; text-transform:uppercase; }
+    .v{ color:rgba(231,238,247,.96); font-weight:950; font-size:16px; margin-top:4px; }
+
+    .row{ display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:10px; }
+
+    .sideTitle{
+      font-size:12px;
+      letter-spacing:.10em;
+      text-transform:uppercase;
+      color:rgba(231,238,247,.90);
+      margin:0 0 10px 0;
+      font-weight:950;
+    }
+
+    .list{ display:flex; flex-direction:column; gap:8px; }
+    .list button{
+      width:100%;
+      text-align:left;
+      padding:10px 10px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:rgba(11,15,20,.48);
+      color:var(--text);
+      cursor:pointer;
+      font-weight:850;
+    }
+    .list button:hover{
+      border-color: rgba(122,162,255,.35);
+      background: rgba(122,162,255,.10);
+    }
+
+    .empty{
+      margin-top:14px;
+      color:rgba(159,176,195,.88);
+      font-size:13px;
+      line-height:1.35;
+    }
+
+    .toast{
+      position:fixed;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:18px;
+      padding:10px 12px;
+      border-radius:999px;
+      border:1px solid var(--border);
+      background:rgba(12,18,26,.85);
+      color:var(--text);
+      font-size:12px;
+      box-shadow:var(--shadow);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .toast.show{ opacity:1; transform:translateX(-50%) translateY(-2px); }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <h1>Element Card</h1>
+        <p class="sub">One search bar → outputs only</p>
+      </div>
+      <div class="pill" title="Dataset status">
+        <span class="dot" id="dsDot"></span>
+        <span id="dsText">Loading…</span>
+      </div>
+    </header>
+
+    <section class="card">
+      <div class="searchRow">
+        <div class="search">
+          <span style="color:rgba(159,176,195,.85);font-weight:1000;">⌕</span>
+          <input id="q" type="text" autocomplete="off"
+                 placeholder="Name, Symbol, Atomic #, or Mass (e.g. 12.011)" />
+        </div>
+        <button class="btn primary" id="btnSearch">Search</button>
+        <button class="btn ghost" id="btnRandom">Random</button>
+        <button class="btn bad" id="btnClear">Clear</button>
+      </div>
+
+      <p class="hint">
+        Input logic: <b>decimal</b> → mass • <b>1–3 digits</b> → atomic # • <b>1–3 letters</b> → symbol • otherwise → name.
+        Output includes state + melting/boiling points from <code>elements.json</code>.
+      </p>
+
+      <div class="layout" id="layout" style="display:none;">
+        <!-- MAIN CARD -->
+        <div class="panel2">
+          <div class="badges">
+            <span class="badge"><span class="dot" id="catDot"></span><span id="catText">Category</span></span>
+            <span class="badge">Group: <span class="v" id="groupText" style="font-size:12px;">—</span></span>
+            <span class="badge">Period: <span class="v" id="periodText" style="font-size:12px;">—</span></span>
+          </div>
+
+          <div class="hero">
+            <div class="symbolBox"><div class="symbol" id="sym">—</div></div>
+            <div class="meta">
+              <p class="name" id="name">—</p>
+
+              <div class="grid">
+                <div class="kv"><div class="k">Atomic #</div><div class="v" id="anum">—</div></div>
+                <div class="kv"><div class="k">Atomic mass</div><div class="v" id="amass">—</div></div>
+                <div class="kv"><div class="k">Natural state (STP)</div><div class="v" id="stateText">—</div></div>
+                <div class="kv"><div class="k">Family / type</div><div class="v" id="typeText">—</div></div>
+                <div class="kv"><div class="k">Melting point (°C)</div><div class="v" id="mpText">—</div></div>
+                <div class="kv"><div class="k">Boiling point (°C)</div><div class="v" id="bpText">—</div></div>
+              </div>
+
+              <div class="row">
+                <button class="btn ghost" id="btnCopySymbol">Copy Symbol</button>
+                <button class="btn ghost" id="btnCopyCard">Copy Card</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- MATCHES -->
+        <div class="panel2">
+          <p class="sideTitle">Matches</p>
+          <div id="matchHint" class="empty">If multiple results fit (name partials), pick one.</div>
+          <div class="list" id="matchList"></div>
+        </div>
+      </div>
+
+      <div id="emptyState" class="empty">
+        Type something and hit <b>Search</b>.
+      </div>
+    </section>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const $ = (s)=>document.querySelector(s);
+  const toastEl = $("#toast");
+
+  function toast(msg){
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    setTimeout(()=>toastEl.classList.remove("show"), 1600);
+  }
+
+  function setDatasetStatus(ok, msg){
+    $("#dsDot").style.background = ok ? "var(--good)" : "var(--warn)";
+    $("#dsText").innerHTML = msg;
+  }
+
+  function normalize(s){ return String(s ?? "").trim().toLowerCase(); }
+
+  function asNum(v){
+    const n = (typeof v === "number") ? v : Number(v);
+    return Number.isFinite(n) ? n : null;
+  }
+
+  function fmtNum(n, digits=3){
+    if(n == null) return "—";
+    // Keep it readable: don't force trailing zeros unless needed
+    const s = String(n);
+    if(s.includes("e") || s.includes("E")) return n.toFixed(digits);
+    // If it's already short, keep it
+    if(s.length <= 8) return s;
+    return n.toFixed(digits);
+  }
+
+  function categoryColor(catRaw){
+    const cat = normalize(catRaw);
+    if(cat.includes("noble")) return "var(--accent)";
+    if(cat.includes("halogen")) return "var(--warn)";
+    if(cat.includes("alkali metal")) return "var(--bad)";
+    if(cat.includes("alkaline")) return "var(--good)";
+    if(cat.includes("metalloid")) return "rgba(163,255,111,.85)";
+    if(cat.includes("nonmetal")) return "rgba(122,162,255,.85)";
+    if(cat.includes("post-transition")) return "rgba(159,176,195,.95)";
+    if(cat.includes("transition")) return "rgba(255,204,102,.95)";
+    return "rgba(159,176,195,.95)";
+  }
+
+  // Minimal fallback so the UI never hard-crashes if JSON is missing
+  const FALLBACK = [
+    { number: 1, symbol:"H", name:"Hydrogen", atomic_mass: 1.008, group:1, period:1, category:"nonmetal", state:"gas", melting_point_c:-259.16, boiling_point_c:-252.87 },
+    { number: 2, symbol:"He", name:"Helium", atomic_mass: 4.0026, group:18, period:1, category:"noble gas", state:"gas", melting_point_c:-272.2, boiling_point_c:-268.93 }
+  ];
+
+  let ELEMENTS = [...FALLBACK];
+
+  async function loadDataset(){
+    try{
+      const res = await fetch("./elements.json", { cache:"no-store" });
+      if(!res.ok) throw new Error("no elements.json");
+      const data = await res.json();
+      if(!Array.isArray(data) || data.length < 5) throw new Error("dataset too small");
+
+      ELEMENTS = data
+        .filter(e => e && (typeof e.number === "number" || /^\d+$/.test(String(e.number))) && e.symbol && e.name)
+        .map(e => ({
+          number: asNum(e.number),
+          symbol: String(e.symbol),
+          name: String(e.name),
+          atomic_mass: asNum(e.atomic_mass ?? e.atomicMass ?? e.mass),
+
+          group: asNum(e.group),
+          period: asNum(e.period),
+          category: String(e.category ?? e.type ?? "unknown"),
+
+          state: String(e.state ?? e.state_stp ?? e.phase ?? "unknown"),
+          melting_point_c: asNum(e.melting_point_c ?? e.melting_c ?? e.meltingPointC),
+          boiling_point_c: asNum(e.boiling_point_c ?? e.boiling_c ?? e.boilingPointC)
+        }))
+        .filter(e => e.number != null);
+
+      setDatasetStatus(true, `Dataset: <b>${ELEMENTS.length}</b> elements`);
+    }catch(_){
+      setDatasetStatus(false, `Dataset: <b>${ELEMENTS.length}</b> (fallback) • add <code>elements.json</code>`);
+    }
+  }
+
+  function parseQuery(raw){
+    const q = raw.trim();
+    if(!q) return { kind:"empty" };
+
+    // decimal => mass
+    if(q.includes(".")){
+      const mass = Number(q);
+      if(Number.isFinite(mass)) return { kind:"mass", mass };
+      return { kind:"bad", reason:"Mass must be a number like 12.011" };
+    }
+
+    // digits => atomic number (allow leading zeros)
+    if(/^\d{1,3}$/.test(q)){
+      return { kind:"number", number: Number(q) };
+    }
+
+    // 1–3 letters => symbol
+    if(/^[a-zA-Z]{1,3}$/.test(q)){
+      return { kind:"symbol", symbol: q };
+    }
+
+    // otherwise => name
+    return { kind:"name", name: q };
+  }
+
+  function findByNumber(n){
+    return ELEMENTS.filter(e => e.number === n);
+  }
+  function findBySymbol(sym){
+    const s = normalize(sym);
+    return ELEMENTS.filter(e => normalize(e.symbol) === s);
+  }
+  function findByName(name){
+    const n = normalize(name);
+    const exact = ELEMENTS.filter(e => normalize(e.name) === n);
+    if(exact.length) return exact;
+
+    const starts = ELEMENTS.filter(e => normalize(e.name).startsWith(n));
+    if(starts.length) return starts;
+
+    return ELEMENTS.filter(e => normalize(e.name).includes(n));
+  }
+  function findByMass(mass){
+    const withMass = ELEMENTS.filter(e => e.atomic_mass != null);
+    if(!withMass.length) return [];
+
+    let best = null;
+    let bestDiff = Infinity;
+    for(const e of withMass){
+      const d = Math.abs(e.atomic_mass - mass);
+      if(d < bestDiff){
+        bestDiff = d;
+        best = e;
+      }
+    }
+    // Mass search tolerance: keep it modest so it doesn't mislead
+    if(best && bestDiff <= 0.15) return [best];
+    return [];
+  }
+
+  function clearUI(){
+    $("#q").value = "";
+    $("#layout").style.display = "none";
+    $("#emptyState").style.display = "block";
+    $("#emptyState").textContent = "Type something and hit Search.";
+    $("#matchList").innerHTML = "";
+    $("#matchHint").textContent = "If multiple results fit (name partials), pick one.";
+  }
+
+  function showResults(matches){
+    $("#layout").style.display = "grid";
+    $("#emptyState").style.display = "none";
+
+    const list = $("#matchList");
+    list.innerHTML = "";
+
+    if(matches.length > 1){
+      $("#matchHint").textContent = `Found ${matches.length} matches. Click one.`;
+      matches.slice(0, 14).forEach(e=>{
+        const b = document.createElement("button");
+        b.textContent = `${e.number} • ${e.symbol} • ${e.name}`;
+        b.addEventListener("click", ()=>renderElement(e));
+        list.appendChild(b);
+      });
+    }else{
+      $("#matchHint").textContent = "Single match.";
+    }
+
+    renderElement(matches[0]);
+  }
+
+  function renderElement(e){
+    $("#sym").textContent = e.symbol ?? "—";
+    $("#name").textContent = e.name ?? "—";
+    $("#anum").textContent = (e.number != null) ? String(e.number) : "—";
+    $("#amass").textContent = fmtNum(e.atomic_mass, 4);
+
+    const cat = e.category ?? "unknown";
+    $("#catText").textContent = cat;
+    $("#catDot").style.background = categoryColor(cat);
+
+    $("#groupText").textContent = (e.group != null) ? String(e.group) : "—";
+    $("#periodText").textContent = (e.period != null) ? String(e.period) : "—";
+
+    $("#typeText").textContent = cat;
+    $("#stateText").textContent = e.state ?? "unknown";
+    $("#mpText").textContent = (e.melting_point_c != null) ? fmtNum(e.melting_point_c, 2) : "—";
+    $("#bpText").textContent = (e.boiling_point_c != null) ? fmtNum(e.boiling_point_c, 2) : "—";
+
+    $("#btnCopySymbol").onclick = async ()=>{
+      try{ await navigator.clipboard.writeText(e.symbol); toast("Copied symbol"); }
+      catch(_){ toast("Clipboard blocked"); }
+    };
+
+    $("#btnCopyCard").onclick = async ()=>{
+      const card =
+`# ${e.name} (${e.symbol})
+Atomic #: ${e.number}
+Atomic mass: ${fmtNum(e.atomic_mass, 4)}
+Group: ${e.group ?? "—"}
+Period: ${e.period ?? "—"}
+Category: ${cat}
+State (STP): ${e.state ?? "unknown"}
+Melting point (°C): ${e.melting_point_c ?? "—"}
+Boiling point (°C): ${e.boiling_point_c ?? "—"}`;
+      try{ await navigator.clipboard.writeText(card); toast("Copied card"); }
+      catch(_){ toast("Clipboard blocked"); }
+    };
+  }
+
+  function doSearch(){
+    const raw = $("#q").value;
+    const parsed = parseQuery(raw);
+
+    if(parsed.kind === "empty"){
+      clearUI();
+      return;
+    }
+    if(parsed.kind === "bad"){
+      toast(parsed.reason);
+      return;
+    }
+
+    let matches = [];
+    if(parsed.kind === "mass") matches = findByMass(parsed.mass);
+    if(parsed.kind === "number") matches = findByNumber(parsed.number);
+    if(parsed.kind === "symbol") matches = findBySymbol(parsed.symbol);
+    if(parsed.kind === "name") matches = findByName(parsed.name);
+
+    if(!matches.length){
+      $("#layout").style.display = "none";
+      $("#emptyState").style.display = "block";
+      $("#emptyState").textContent = "No match. Try a different query.";
+      return;
+    }
+
+    showResults(matches);
+  }
+
+  function randomElement(){
+    if(!ELEMENTS.length) return;
+    const e = ELEMENTS[Math.floor(Math.random()*ELEMENTS.length)];
+    $("#q").value = e.symbol;
+    doSearch();
+  }
+
+  // Wire UI
+  $("#btnSearch").addEventListener("click", doSearch);
+  $("#btnRandom").addEventListener("click", randomElement);
+  $("#btnClear").addEventListener("click", clearUI);
+  $("#q").addEventListener("keydown", (e)=>{ if(e.key === "Enter") doSearch(); });
+
+  // Init
+  (async ()=>{
+    await loadDataset();
+    setTimeout(()=>$("#q").focus(), 120);
+  })();
+</script>
+</body>
+</html>
